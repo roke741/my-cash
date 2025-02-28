@@ -1,87 +1,36 @@
-'use client';
-import { Box } from '@/components/ui/box';
-import { Text, ScrollView } from 'react-native';
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Card } from "@/components/ui/card"
-import { Heading } from "@/components/ui/heading"
-import { VStack } from "@/components/ui/vstack"
-import { HStack } from "@/components/ui/hstack" 
-import Header from '@/components/screen/home/header';
-import Balances from '@/components/screen/home/balances';
-import Actions from '@/components/screen/home/actions';
+import React, { useEffect } from "react";
+import { ScrollView, useColorScheme } from "react-native";
+import Header from "@/components/screen/home/header";
+import Balances from "@/components/screen/home/balances";
+import Actions from "@/components/screen/home/actions";
+import { Box } from "@/components/ui/box";
+import { Heading } from "@/components/ui/heading";
+import { VStack } from "@/components/ui/vstack";
+import { Card } from "@/components/ui/card";
+import { HStack } from "@/components/ui/hstack";
+import { Text } from "@/components/ui/text";
+import TransactionCard from "@/components/screen/home/transaction-card";
+import { DollarSign } from "lucide-react-native";
 
-export default function HomeScreen() {
+export default function DashboardScreen() {
   return (
-    <SafeAreaView className="flex-1 relative">
-      <ScrollView>
-        <Header />
-        <Balances />
-        <Actions />
-        <Box className="p-4">
-          <Heading size="lg" className="mb-4">💰 Recent Transactions</Heading>
-          <VStack space='md'>
-            <Card size="md" variant="elevated" className="mb-3">
-              <HStack space='md' className='justify-between'> 
-                <VStack space='md'>
-                  <Text className="text-md mb-2">Payment</Text>
-                  <Text className="text-sm">Payment from John Doe</Text>
-                </VStack>
-                <Text className="text-md">💲52040.60</Text>
-              </HStack>
-            </Card>
-
-            <Card size="md" variant="elevated" className="mb-3">
-              <HStack space='md' className='justify-between'> 
-                <VStack space='md'>
-                  <Text className="text-md mb-2">Payment</Text>
-                  <Text className="text-sm">Payment from John Doe</Text>
-                </VStack>
-                <Text className="text-md">💲52040.60</Text>
-              </HStack>
-            </Card>
-
-            <Card size="md" variant="elevated" className="mb-3">
-              <HStack space='md' className='justify-between'> 
-                <VStack space='md'>
-                  <Text className="text-md mb-2">Payment</Text>
-                  <Text className="text-sm">Payment from John Doe</Text>
-                </VStack>
-                <Text className="text-md">💲52040.60</Text>
-              </HStack>
-            </Card>
-
-            <Card size="md" variant="elevated" className="mb-3">
-              <HStack space='md' className='justify-between'> 
-                <VStack space='md'>
-                  <Text className="text-md mb-2">Payment</Text>
-                  <Text className="text-sm">Payment from John Doe</Text>
-                </VStack>
-                <Text className="text-md">💲52040.60</Text>
-              </HStack>
-            </Card>
-
-            <Card size="md" variant="elevated" className="mb-3">
-              <HStack space='md' className='justify-between'> 
-                <VStack space='md'>
-                  <Text className="text-md mb-2">Payment</Text>
-                  <Text className="text-sm">Payment from John Doe</Text>
-                </VStack>
-                <Text className="text-md">💲52040.60</Text>
-              </HStack>
-            </Card>
-
-            <Card size="md" variant="elevated" className="mb-3">
-              <HStack space='md' className='justify-between'> 
-                <VStack space='md'>
-                  <Text className="text-md mb-2">Payment</Text>
-                  <Text className="text-sm">Payment from John Doe</Text>
-                </VStack>
-                <Text className="text-md">💲52040.60</Text>
-              </HStack>
-            </Card>
-          </VStack>    
-        </Box>
-      </ScrollView>
-    </SafeAreaView>
+    <ScrollView>
+      <Header />
+      <Balances />
+      <Actions />
+      <Box className="mb-2">
+        <Heading size="lg" className="mb-4">
+          💰 Recent Transactions
+        </Heading>
+        <VStack space="md">
+          <TransactionCard
+            title="🍗 Comida"
+            description="Pago de comida"
+            amount={52040.6}
+            isIncome={true}
+          />
+        </VStack>
+      </Box>
+    </ScrollView>
   );
 }

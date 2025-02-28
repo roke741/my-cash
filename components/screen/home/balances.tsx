@@ -2,8 +2,13 @@ import { Box } from "@/components/ui/box";
 import { Card } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { HStack } from "@/components/ui/hstack";
-import { Text } from "react-native";
+import { Text } from "@/components/ui/text";
+import { Image } from "@/components/ui/image";
 import { useState } from "react";
+import BalanceCard from "./balance-card";
+import { Button, ButtonText } from "@/components/ui/button";
+import BalanceMain from "./balance-main";
+import { BankAccountsProvider } from "@/context/bank-accounts-context";
 
 export default function Balances() {
   const [totalBalance, setTotalBalance] = useState(0);
@@ -19,27 +24,24 @@ export default function Balances() {
   };
 
   return (
-    <Box className="p-4">
-      <Card size="md" variant="elevated" className="mb-3">
-        <Text className="text-md mb-2">🏦 Total Balance</Text>
-        <Heading size="xl" className="mb-1">
-          $000.00
-        </Heading>
-      </Card>
-      <HStack space="md">
-        <Card size="md" variant="elevated" className="flex-1">
-          <Text className="text-sm mb-2">📈 Total expenses</Text>
-          <Heading size="lg" className="mb-1">
-            $000.00
-          </Heading>
-        </Card>
-        <Card size="md" variant="elevated" className="flex-1">
-          <Text className="text-sm mb-2">📉 Total income </Text>
-          <Heading size="lg" className="mb-1">
-            $000.00
-          </Heading>
-        </Card>
-      </HStack>
-    </Box>
+    <BankAccountsProvider>
+      <Box className="w-full mb-4">
+        <BalanceMain />
+        <Box className="flex flex-row gap-3">
+          <BalanceCard
+            amount={485.87}
+            title="Total income"
+            icon={require("@/assets/images/chart_increasing.png")}
+            color="text-green-400"
+          />
+          <BalanceCard
+            amount={2.99}
+            title="Total expenses"
+            icon={require("@/assets/images/chart_decreasing.png")}
+            color="text-red-400"
+          />
+        </Box>
+      </Box>
+    </BankAccountsProvider>
   );
 }

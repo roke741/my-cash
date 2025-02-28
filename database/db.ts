@@ -1,5 +1,6 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 import * as configDB from './config-db';
+import * as seedDB from './seeders/seeds-db';
 
 export const initializeDB = async (db: SQLiteDatabase) => {
   console.log('Initializing database');
@@ -19,18 +20,18 @@ export const initializeDB = async (db: SQLiteDatabase) => {
     console.log('Creating database tables');
     await db.withTransactionAsync(async () => {
       const execStatements = [
-        configDB.DROP_TABLES,
-        configDB.CREATE_TABLE_EXPENSES_CATEGORIES,
-        configDB.CREATE_TABLE_BANKS,
-        configDB.CREATE_TABLE_BANK_ACCOUNTS,
-        configDB.CREATE_TABLE_TRANSACTION_TYPES,
-        configDB.CREATE_TABLE_TRANSACTIONS,
-        configDB.CREATE_TABLE_FREQUENCIES,
-        configDB.CREATE_TABLE_SUSCRIPTIONS,
-        configDB.INSERT_CATEGORIES,
-        configDB.INSERT_BANKS,
-        configDB.INSERT_TRANSACTION_TYPES,
-        configDB.INSERT_FREQUENCIES
+        seedDB.DROP_TABLES,
+        seedDB.CREATE_TABLE_EXPENSES_CATEGORIES,
+        seedDB.CREATE_TABLE_BANKS,
+        seedDB.CREATE_TABLE_BANK_ACCOUNTS,
+        seedDB.CREATE_TABLE_TRANSACTION_TYPES,
+        seedDB.CREATE_TABLE_TRANSACTIONS,
+        seedDB.CREATE_TABLE_FREQUENCIES,
+        seedDB.CREATE_TABLE_SUSCRIPTIONS,
+        seedDB.INSERT_CATEGORIES,
+        seedDB.INSERT_BANKS,
+        seedDB.INSERT_TRANSACTION_TYPES,
+        seedDB.INSERT_FREQUENCIES
       ];
   
       console.log('Executing statements');

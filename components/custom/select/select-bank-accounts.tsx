@@ -1,7 +1,7 @@
 import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicatorWrapper, ActionsheetDragIndicator, ActionsheetItem, ActionsheetItemText } from "@/components/ui/actionsheet";
 import { useSQLiteContext } from "expo-sqlite";
 import { useState, useEffect } from "react";
-import { BankAccount } from "@/database/models/types";  
+import { BankAccount } from "@/database/types";  
 
 interface BankAccountsSelectProps {
   isOpen: boolean;

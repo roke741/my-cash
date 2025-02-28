@@ -1,57 +1,57 @@
-import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicatorWrapper, ActionsheetDragIndicator, ActionsheetItem, ActionsheetItemText } from "@/components/ui/actionsheet";
-import { useSQLiteContext } from "expo-sqlite";
+import {
+  Actionsheet,
+  ActionsheetBackdrop,
+  ActionsheetContent,
+  ActionsheetDragIndicatorWrapper,
+  ActionsheetDragIndicator,
+  ActionsheetItem,
+  ActionsheetItemText,
+} from "@/components/ui/actionsheet";
 import { useState, useEffect } from "react";
-import { Bank } from "@/database/models/types";
+import { banksDB } from "@/database/models/banks";
+import { BankType } from "@/database/types";
 
 interface SelectBankProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectBank: (bank: string) => void;
+  onSelectBank: (bankID: number, bankName: string) => void;
 }
 
 export default function SelectBank({
   isOpen,
   onClose,
-  onSelectBank
+  onSelectBank,
 }: SelectBankProps) {
-
-  const db = useSQLiteContext();  
-
-  const [categories, setCategories] = useState<Bank[]>([]);    
-
+  const [banks, setBanks] = useState<BankType[]>([]);
   const handleClose = () => {
     onClose();
   };
-
   useEffect(() => {
-    async function fetchCategories() {
-      const categories = await db.getAllAsync<Bank>('SELECT * FROM banks');
-      setCategories(categories);
-    };  
-    fetchCategories();
-
+    async function fetchBanks() {
+      setBanks(await banksDB.all());
+    }
+    fetchBanks();
   }, []);
 
   return (
-    <Actionsheet 
-    isOpen={isOpen}
-    onClose={handleClose}>
-        <ActionsheetBackdrop />
-        <ActionsheetContent>
-          <ActionsheetDragIndicatorWrapper>
-            <ActionsheetDragIndicator />
-          </ActionsheetDragIndicatorWrapper>
-          {categories.map((category) => (
-            <ActionsheetItem 
-              key={category.id} 
-              onPress={() => {
-                onSelectBank(category.name);
-                handleClose();
-              }}>
-              <ActionsheetItemText>{category.name}</ActionsheetItemText>
-            </ActionsheetItem>
-          ))}
-        </ActionsheetContent>
-      </Actionsheet>
+    <Actionsheet isOpen={isOpen} onClose={handleClose}>
+      <ActionsheetBackdrop />
+      <ActionsheetContent>
+        <ActionsheetDragIndicatorWrapper>
+          <ActionsheetDragIndicator />
+        </ActionsheetDragIndicatorWrapper>
+        {banks.map((bank) => (
+          <ActionsheetItem
+            key={bank.id}
+            onPress={() => {
+              onSelectBank(bank.id, bank.name);
+              handleClose();
+            }}
+          >
+            <ActionsheetItemText>{bank.name}</ActionsheetItemText>
+          </ActionsheetItem>
+        ))}
+      </ActionsheetContent>
+    </Actionsheet>
   );
 }

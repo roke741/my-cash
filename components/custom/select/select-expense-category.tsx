@@ -1,7 +1,7 @@
 import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicatorWrapper, ActionsheetDragIndicator, ActionsheetItem, ActionsheetItemText } from "@/components/ui/actionsheet";
 import { useSQLiteContext } from "expo-sqlite";
 import { useState, useEffect } from "react";
-import { ExpenseCategory } from "@/database/models/types";
+import { ExpenseCategory } from "@/database/types";
 
 interface SelectExpenseCategoryProps {
   isOpen: boolean;

@@ -161,8 +161,8 @@ module.exports = {
           muted: 'rgb(var(--color-background-muted)/<alpha-value>)',
           success: 'rgb(var(--color-background-success)/<alpha-value>)',
           info: 'rgb(var(--color-background-info)/<alpha-value>)',
-          light: '#DBD8E3',//'#FBFBFB',
-          dark: '#2A2438'//'#181719',
+          light: '#DBD8E3',//'#5C5470',DBD8E3
+          dark: '#352F44'//'#2A2438', 352F44
         },
         indicator: {
           primary: 'rgb(var(--color-indicator-primary)/<alpha-value>)',

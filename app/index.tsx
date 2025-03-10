@@ -11,6 +11,8 @@ import { HStack } from "@/components/ui/hstack";
 import { Text } from "@/components/ui/text";
 import TransactionCard from "@/components/screen/home/transaction-card";
 import { DollarSign } from "lucide-react-native";
+import Transactions from "@/components/screen/home/transactions";
+import { Toaster } from "sonner-native";
 
 export default function DashboardScreen() {
   return (
@@ -18,19 +20,7 @@ export default function DashboardScreen() {
       <Header />
       <Balances />
       <Actions />
-      <Box className="mb-2">
-        <Heading size="lg" className="mb-4">
-          💰 Recent Transactions
-        </Heading>
-        <VStack space="md">
-          <TransactionCard
-            title="🍗 Comida"
-            description="Pago de comida"
-            amount={52040.6}
-            isIncome={true}
-          />
-        </VStack>
-      </Box>
+      <Transactions />
     </ScrollView>
   );
 }

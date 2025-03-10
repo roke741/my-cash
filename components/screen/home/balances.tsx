@@ -29,13 +29,13 @@ export default function Balances() {
         <BalanceMain />
         <Box className="flex flex-row gap-3">
           <BalanceCard
-            amount={485.87}
+            amount={0.00}
             title="Total income"
             icon={require("@/assets/images/chart_increasing.png")}
             color="text-green-400"
           />
           <BalanceCard
-            amount={2.99}
+            amount={0.00}
             title="Total expenses"
             icon={require("@/assets/images/chart_decreasing.png")}
             color="text-red-400"

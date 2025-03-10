@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS transaction_types (
 export const CREATE_TABLE_TRANSACTIONS = `
 CREATE TABLE IF NOT EXISTS transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  account_id INTEGER,
+  bank_account_id INTEGER,
   category_id INTEGER,
   amount REAL NOT NULL,
   description TEXT,
@@ -56,14 +56,14 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   active INTEGER NOT NULL DEFAULT 1,
   name TEXT NOT NULL,
-  account_id INTEGER,
+  bank_account_id INTEGER,
   category_id INTEGER,
   amount REAL NOT NULL,
   description TEXT,
   start_date TEXT NOT NULL,
   end_date TEXT NOT NULL,
   frequency_id INTEGER,
-  FOREIGN KEY (account_id) REFERENCES bank_accounts(id),
+  FOREIGN KEY (bank_account_id) REFERENCES bank_accounts(id),
   FOREIGN KEY (category_id) REFERENCES categories(id),
   FOREIGN KEY (frequency_id) REFERENCES frequencies(id)
 );`;

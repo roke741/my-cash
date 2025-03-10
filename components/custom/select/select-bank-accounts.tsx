@@ -6,13 +6,13 @@ import { BankAccount } from "@/database/types";
 interface BankAccountsSelectProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectBank: (category: string) => void;
+  onSelectBankAccount: (bank: BankAccount) => void;
 }
 
 export default function SelectBankAccounts({
   isOpen,
   onClose,
-  onSelectBank
+  onSelectBankAccount
 }: BankAccountsSelectProps) {
   const db = useSQLiteContext();
 
@@ -50,10 +50,10 @@ export default function SelectBankAccounts({
               <ActionsheetItem 
                 key={bankAccount.id} 
                 onPress={() => {
-                  onSelectBank(bankAccount.name);
+                  onSelectBankAccount(bankAccount);
                   handleClose();
                 }}>
-                <ActionsheetItemText>{bankAccount.name}</ActionsheetItemText>
+                <ActionsheetItemText>🏦 {bankAccount.name}</ActionsheetItemText>
               </ActionsheetItem>
             ))
           )}

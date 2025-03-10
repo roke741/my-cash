@@ -14,7 +14,7 @@ import { BankType } from "@/database/types";
 interface SelectBankProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectBank: (bankID: number, bankName: string) => void;
+  onSelectBank: (bank: BankType) => void;
 }
 
 export default function SelectBank({
@@ -44,7 +44,7 @@ export default function SelectBank({
           <ActionsheetItem
             key={bank.id}
             onPress={() => {
-              onSelectBank(bank.id, bank.name);
+              onSelectBank(bank); 
               handleClose();
             }}
           >

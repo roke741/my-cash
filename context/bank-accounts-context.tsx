@@ -24,7 +24,7 @@ export const BankAccountsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [balance, setBalance] = useState<number>(0);
 
-  const refreshBankAccounts = async () => {
+  const refreshBankAccounts = async () => { 
     try {
       const accounts = await bankAccountsDB.all();
       setBankAccounts(accounts);
@@ -42,7 +42,7 @@ export const BankAccountsProvider: React.FC<{ children: React.ReactNode }> = ({
     const totalBalance = bankAccounts.reduce((acc, account) => {
       return acc + account.balance;
     }, 0);
-    setBalance(totalBalance);
+    setBalance(Number(totalBalance.toFixed(2)));
   }, [bankAccounts]);
 
 

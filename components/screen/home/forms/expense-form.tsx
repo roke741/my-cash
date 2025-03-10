@@ -112,7 +112,6 @@ export default function ExpenseForm({ isOpen, onClose }: ExpenseFormProps) {
         isOpen={isOpen}
         onClose={onClose}
         size="xs"
-        style={{ pointerEvents: 'none', zIndex: 1000 }}
       >
         <ModalBackdrop />
         <ModalContent className="border-0 rounded-xl">

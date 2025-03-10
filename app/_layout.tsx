@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@/components/ui/ThemeProvider/ThemeProvider";
 import React, { useState, useEffect } from "react";
 import { useFonts } from "expo-font";
-import { Slot } from 'expo-router';
+import { Slot } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import "@/global.css";
@@ -12,9 +12,12 @@ import { SQLiteProvider } from "expo-sqlite";
 import { DATABASE_NAME } from "@/database/config-db";
 import { initializeDB } from "@/database/db";
 import { Box } from "@/components/ui/box";
-//import { SafeAreaView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-//import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+import { Toaster } from "sonner-native";
+import { Portal } from "@/components/ui/portal";
+import { View } from "react-native";
 
 // import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 // const toastConfig = {
@@ -86,23 +89,25 @@ export default function RootLayout() {
   }
 
   return (
-    <GluestackUIProvider mode={colorMode}>
-      <ThemeProvider>
-        <StatusBar
-          style={colorMode === "dark" ? "light" : "dark"}
-          backgroundColor={`${colorMode == "dark" ? "#352F44" : "#DBD8E3"}`}
-        />
-        <SQLiteProvider databaseName={DATABASE_NAME} onInit={initializeDB}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <Box 
-              className={`bg-background-${colorMode} p-4 h-full `} >
-            {/* <Box className="bg-background-dark p-4 h-full"> */}
-              <Slot />
-            </Box>
-          </SafeAreaView>
-          {/* <Toast config={toastConfig} /> */}
-        </SQLiteProvider>
-      </ThemeProvider>
-    </GluestackUIProvider>
+    <SafeAreaProvider>
+      <SQLiteProvider databaseName={DATABASE_NAME} onInit={initializeDB}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <GluestackUIProvider mode={colorMode}>
+            <ThemeProvider>
+              <StatusBar
+                style={colorMode === "dark" ? "light" : "dark"}
+                backgroundColor={colorMode === "dark" ? "#352F44" : "#DBD8E3"}
+              />
+              <SafeAreaView style={{ flex: 1 }}>
+                <View className={`bg-background-${colorMode} p-4 h-full`}>
+                  <Slot />
+                </View>
+              </SafeAreaView>
+            </ThemeProvider>
+          </GluestackUIProvider>
+          <Toaster visibleToasts={2} richColors/>
+        </GestureHandlerRootView>
+      </SQLiteProvider>
+    </SafeAreaProvider>
   );
 }

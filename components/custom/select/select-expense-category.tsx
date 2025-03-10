@@ -6,13 +6,13 @@ import { ExpenseCategory } from "@/database/types";
 interface SelectExpenseCategoryProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectCategory: (category: string) => void;
+  onSelectExpenseCategory: (expenseCategory: ExpenseCategory) => void;
 }
 
 export default function SelectExpenseCategory({
   isOpen,
   onClose,
-  onSelectCategory
+  onSelectExpenseCategory
 }: SelectExpenseCategoryProps) {
 
   const db = useSQLiteContext();  
@@ -45,7 +45,7 @@ export default function SelectExpenseCategory({
             <ActionsheetItem 
               key={category.id} 
               onPress={() => {
-                onSelectCategory(category.name);
+                onSelectExpenseCategory(category);
                 handleClose();
               }}>
               <ActionsheetItemText>{category.name}</ActionsheetItemText>

@@ -1,42 +1,48 @@
 "use client";
 
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type Theme = "light" | "dark";
+export type ThemeMode = "light" | "dark" | "system";
+export type ResolvedTheme = "light" | "dark";
 
 interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
+  themeMode: ThemeMode;
+  resolvedTheme: ResolvedTheme;
+  setThemeMode: (mode: ThemeMode) => void;
 }
 
-export const ThemeContext = createContext<ThemeContextType | undefined>(
-  undefined
-);
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+const STORAGE_KEY = "themeMode";
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>("light");
+  const systemScheme = useColorScheme();
+  const [themeMode, setThemeModeState] = useState<ThemeMode>("system");
 
   useEffect(() => {
-    (async () => {
-      const savedTheme = (await AsyncStorage.getItem("theme")) as
-        | Theme
-        | "light";
-      if (savedTheme) {
-        setTheme(savedTheme);
-        AsyncStorage.setItem("theme", savedTheme);
+    AsyncStorage.getItem(STORAGE_KEY).then((saved) => {
+      if (saved === "light" || saved === "dark" || saved === "system") {
+        setThemeModeState(saved);
       }
-    })();
+    });
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    AsyncStorage.setItem("theme", newTheme);
+  const setThemeMode = (mode: ThemeMode) => {
+    setThemeModeState(mode);
+    AsyncStorage.setItem(STORAGE_KEY, mode);
   };
 
+  const resolvedTheme: ResolvedTheme =
+    themeMode === "system"
+      ? systemScheme === "dark"
+        ? "dark"
+        : "light"
+      : themeMode;
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ themeMode, resolvedTheme, setThemeMode }}>
       {children}
     </ThemeContext.Provider>
   );

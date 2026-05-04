@@ -1,6 +1,5 @@
 import { Box } from "@/components/ui/box";
 import { Card } from "@/components/ui/card";
-import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
 import { Image } from "@/components/ui/image";
 
@@ -8,26 +7,27 @@ interface BalanceCardProps {
   amount: number;
   title: string;
   icon: any;
-  color: string;
+  color?: string;
 }
 
-export default function BalanceCard({
-  amount,
-  title,
-  icon,
-  color,
-}: BalanceCardProps) {
+export default function BalanceCard({ amount, title, icon, color }: BalanceCardProps) {
+  const amountClass = color ?? 'text-primary-600';
+
   return (
-    <Card size="lg" variant="elevated" className="flex-1 px-4 py-2">
-      <Box className="flex flex-row gap-2 items-center">
+    <Card
+      size="lg"
+      variant="elevated"
+      className="flex-1 p-4 rounded-2xl border border-outline-200/15 bg-background-0"
+    >
+      <Box className="flex flex-row gap-3 items-center">
         <Image size="xs" source={icon} alt="chart" />
-        <Box>
-          <Text size="sm" className="font-semibold">
+        <Box className="flex-1">
+          <Text size="xs" className="font-semibold text-typography-500">
             {title}
           </Text>
-          <Heading size="md" className={`font-bold ${color}`}>
-            S/. {amount}
-          </Heading>
+          <Text size="lg" className={`font-bold ${amountClass}`}>
+            S/ {amount.toFixed(2)}
+          </Text>
         </Box>
       </Box>
     </Card>

@@ -6,48 +6,28 @@ import {
   ActionsheetDragIndicator,
   ActionsheetItem,
   ActionsheetItemText,
-} from "@/components/ui/actionsheet";
-import { useState, useEffect } from "react";
-import { banksDB } from "@/database/models/banks";
-import { BankType } from "@/database/types";
+} from '@/components/ui/actionsheet';
+import { useBanks } from '@/context/bank-context';
+import { Bank } from '@/database/types';
 
-interface SelectBankProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSelectBank: (bank: BankType) => void;
+  onSelect: (bank: Bank) => void;
 }
 
-export default function SelectBank({
-  isOpen,
-  onClose,
-  onSelectBank,
-}: SelectBankProps) {
-  const [banks, setBanks] = useState<BankType[]>([]);
-  const handleClose = () => {
-    onClose();
-  };
-  useEffect(() => {
-    async function fetchBanks() {
-      setBanks(await banksDB.all());
-    }
-    fetchBanks();
-  }, []);
+export default function SelectBank({ isOpen, onClose, onSelect }: Props) {
+  const { banks } = useBanks();
 
   return (
-    <Actionsheet isOpen={isOpen} onClose={handleClose}>
+    <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop />
       <ActionsheetContent>
         <ActionsheetDragIndicatorWrapper>
           <ActionsheetDragIndicator />
         </ActionsheetDragIndicatorWrapper>
         {banks.map((bank) => (
-          <ActionsheetItem
-            key={bank.id}
-            onPress={() => {
-              onSelectBank(bank); 
-              handleClose();
-            }}
-          >
+          <ActionsheetItem key={bank.id} onPress={() => { onSelect(bank); onClose(); }}>
             <ActionsheetItemText>{bank.name}</ActionsheetItemText>
           </ActionsheetItem>
         ))}

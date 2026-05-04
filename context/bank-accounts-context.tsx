@@ -1,94 +1,60 @@
-import React, { useEffect, createContext, useContext, useState } from "react";
-import { bankAccountsDB } from "@/database/models/bank-accounts";
-import { BankAccount, CreateBankAccount } from "@/database/types";
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { bankAccountsDB } from '@/database/models/bank-accounts';
+import { BankAccount, CreateBankAccount } from '@/database/types';
+
+interface BalanceByCurrency {
+  currency: string;
+  total: number;
+}
 
 interface BankAccountsContextType {
-  balance: number;
   bankAccounts: BankAccount[];
-  addBankAccount: ({
-    name,
-    bank_id,
-    account_number,
-    balance,
-  }: CreateBankAccount) => Promise<void>;
+  balancesByCurrency: BalanceByCurrency[];
+  refresh: () => Promise<void>;
+  addBankAccount: (data: CreateBankAccount) => Promise<void>;
   deleteBankAccount: (id: number) => Promise<void>;
 }
 
-export const BankAccountsContext = createContext<
-  BankAccountsContextType | undefined
->(undefined);
+export const BankAccountsContext = createContext<BankAccountsContextType | undefined>(undefined);
 
-export const BankAccountsProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const BankAccountsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
-  const [balance, setBalance] = useState<number>(0);
+  const [balancesByCurrency, setBalancesByCurrency] = useState<BalanceByCurrency[]>([]);
 
-  const refreshBankAccounts = async () => { 
+  const refresh = useCallback(async () => {
     try {
-      const accounts = await bankAccountsDB.all();
+      const [accounts, totals] = await Promise.all([
+        bankAccountsDB.all(),
+        bankAccountsDB.totalByCurrency(),
+      ]);
       setBankAccounts(accounts);
-    } catch (error) {
-      console.error("Error al cargar las cuentas bancarias:", error);
+      setBalancesByCurrency(totals);
+    } catch (e) {
+      console.error('BankAccountsContext refresh error:', e);
     }
-  };
-
-  useEffect(() => {
-    refreshBankAccounts();
   }, []);
 
+  useEffect(() => { refresh(); }, [refresh]);
 
-  useEffect(() => {
-    const totalBalance = bankAccounts.reduce((acc, account) => {
-      return acc + account.balance;
-    }, 0);
-    setBalance(Number(totalBalance.toFixed(2)));
-  }, [bankAccounts]);
+  const addBankAccount = useCallback(async (data: CreateBankAccount) => {
+    await bankAccountsDB.create(data);
+    await refresh();
+  }, [refresh]);
 
-
-  const addBankAccount = async ({
-    name,
-    bank_id,
-    account_number,
-    balance,
-    }: CreateBankAccount) => {
-    try {
-      await bankAccountsDB.create({ name, bank_id, account_number, balance });  
-      await refreshBankAccounts();
-    } catch (error) {
-      console.error("Error al agregar la cuenta bancaria:", error);
-    }
-  };
-
-  const deleteBankAccount = async (id: number) => {
-    try {
-      await bankAccountsDB.delete(id);
-      await refreshBankAccounts();
-    } catch (error) {
-      console.error("Error al eliminar la cuenta bancaria:", error);
-    }
-  };
-
-  const contextValue: BankAccountsContextType = {
-    balance,
-    bankAccounts,
-    addBankAccount,
-    deleteBankAccount,
-  };
+  const deleteBankAccount = useCallback(async (id: number) => {
+    await bankAccountsDB.delete(id);
+    await refresh();
+  }, [refresh]);
 
   return (
-    <BankAccountsContext.Provider value={contextValue}>
+    <BankAccountsContext.Provider value={{ bankAccounts, balancesByCurrency, refresh, addBankAccount, deleteBankAccount }}>
       {children}
     </BankAccountsContext.Provider>
   );
 };
 
 export const useBankAccounts = () => {
-  const context = useContext(BankAccountsContext);
-  if (!context) {
-    throw new Error(
-      "useBankAccounts debe usarse dentro de un BankAccountsProvider"
-    );
-  }
-  return context;
+  const ctx = useContext(BankAccountsContext);
+  if (!ctx) throw new Error('useBankAccounts must be used inside BankAccountsProvider');
+  return ctx;
 };

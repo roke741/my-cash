@@ -1,6 +1,5 @@
-import gluestackPlugin from '@gluestack-ui/nativewind-utils/tailwind-plugin';
-
 /** @type {import('tailwindcss').Config} */
+import plugin from 'tailwindcss';
 module.exports = {
   darkMode: "media",
   important: 'html',
@@ -161,8 +160,8 @@ module.exports = {
           muted: 'rgb(var(--color-background-muted)/<alpha-value>)',
           success: 'rgb(var(--color-background-success)/<alpha-value>)',
           info: 'rgb(var(--color-background-info)/<alpha-value>)',
-          light: '#DBD8E3',//'#5C5470',DBD8E3
-          dark: '#352F44'//'#2A2438', 352F44
+          light: '#F2F2F7',
+          dark: '#241827'
         },
         indicator: {
           primary: 'rgb(var(--color-indicator-primary)/<alpha-value>)',
@@ -195,5 +194,5 @@ module.exports = {
       },
     },
   },
-  plugins: [gluestackPlugin],
+  plugins: [],
 };

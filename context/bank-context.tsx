@@ -1,35 +1,32 @@
-import React, { useEffect, createContext, useContext, useState } from "react";
-import { banksDB } from "@/database/models/banks";
-import { BankType } from "@/database/types";
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { banksDB } from '@/database/models/banks';
+import { Bank } from '@/database/types';
 
-export const BankContext = createContext({} as any);
+interface BankContextType {
+  banks: Bank[];
+  refresh: () => Promise<void>;
+}
 
-export const BankProvider = ({ children }: any) => {
-  const [banks, setBanks] = useState<BankType[]>([]);
+export const BankContext = createContext<BankContextType | undefined>(undefined);
 
-  useEffect(() => {
-    refreshBanks();
+export const BankProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [banks, setBanks] = useState<Bank[]>([]);
+
+  const refresh = useCallback(async () => {
+    setBanks(await banksDB.all());
   }, []);
 
-  const refreshBanks = async () => {
-    setBanks(await banksDB.all());
-  };
-
-  const addBank = async (name: string, abbreviation: string) => {
-    await banksDB.create(name, abbreviation);
-  };
-
-  const deleteBank = async (id: number) => {
-    await banksDB.delete(id);
-  };
+  useEffect(() => { refresh(); }, [refresh]);
 
   return (
-    <BankContext.Provider value={{ banks, addBank, deleteBank }}>
+    <BankContext.Provider value={{ banks, refresh }}>
       {children}
     </BankContext.Provider>
   );
 };
 
-export const useBankContext = () => {
-  return useContext(BankContext);
+export const useBanks = () => {
+  const ctx = useContext(BankContext);
+  if (!ctx) throw new Error('useBanks must be used inside BankProvider');
+  return ctx;
 };

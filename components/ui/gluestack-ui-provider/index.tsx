@@ -1,8 +1,8 @@
 import React from 'react';
 import { config } from './config';
 import { ColorSchemeName, useColorScheme, View, ViewProps } from 'react-native';
-import { OverlayProvider } from '@gluestack-ui/overlay';
-import { ToastProvider } from '@gluestack-ui/toast';
+import { OverlayProvider } from '@gluestack-ui/core/overlay/creator';
+import { ToastProvider } from '@gluestack-ui/core/toast/creator';
 import { colorScheme as colorSchemeNW } from 'nativewind';
 
 type ModeType = 'light' | 'dark' | 'system';
@@ -12,7 +12,7 @@ const getColorSchemeName = (
   mode: ModeType
 ): 'light' | 'dark' => {
   if (mode === 'system') {
-    return colorScheme ?? 'light';
+    return colorScheme === 'dark' ? 'dark' : 'light';
   }
   return mode;
 };

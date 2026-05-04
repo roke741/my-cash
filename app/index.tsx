@@ -1,26 +1,17 @@
-import React, { useEffect } from "react";
-import { ScrollView, useColorScheme } from "react-native";
-import Header from "@/components/screen/home/header";
-import Balances from "@/components/screen/home/balances";
-import Actions from "@/components/screen/home/actions";
-import { Box } from "@/components/ui/box";
-import { Heading } from "@/components/ui/heading";
-import { VStack } from "@/components/ui/vstack";
-import { Card } from "@/components/ui/card";
-import { HStack } from "@/components/ui/hstack";
-import { Text } from "@/components/ui/text";
-import TransactionCard from "@/components/screen/home/transaction-card";
-import { DollarSign } from "lucide-react-native";
-import Transactions from "@/components/screen/home/transactions";
-import { Toaster } from "sonner-native";
+import { Redirect } from 'expo-router';
+import { View, ActivityIndicator } from 'react-native';
+import { useUser } from '@/context/user-context';
 
-export default function DashboardScreen() {
-  return (
-    <ScrollView>
-      <Header />
-      <Balances />
-      <Actions />
-      <Transactions />
-    </ScrollView>
-  );
+export default function Index() {
+  const { isLoading, isOnboardingComplete } = useUser();
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FAFAFA' }}>
+        <ActivityIndicator size="large" color="#8B5CF6" />
+      </View>
+    );
+  }
+
+  return <Redirect href={isOnboardingComplete ? '/(home)' : '/onboarding'} />;
 }

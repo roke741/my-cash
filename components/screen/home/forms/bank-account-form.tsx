@@ -1,256 +1,185 @@
-import { Box } from "@/components/ui/box";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Heading } from "@/components/ui/heading";
-import { Image } from "@/components/ui/image";
-import {
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-} from "@/components/ui/modal";
-import { Text } from "@/components/ui/text";
-import { Icon, CloseIcon } from "@/components/ui/icon";
-import { useState } from "react";
-import { Divider } from "@/components/ui/divider";
-import SelectBank from "@/components/custom/select/select-bank";
-import { Input, InputField } from "@/components/ui/input";
-import { VStack } from "@/components/ui/vstack";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { useBankAccounts } from "@/context/bank-accounts-context";
-import { Alert, AlertIcon, AlertText } from "@/components/ui/alert";
-import { PiggyBank } from "lucide-react-native";
-import { BankAccount, Bank } from "@/database/types";
+import React, { useState } from 'react';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, Controller } from 'react-hook-form';
+import { toast } from 'sonner-native';
+import { Landmark } from 'lucide-react-native';
 
-const bankAccountSchema = z.object({
-  name: z.string().min(5, "Name must be at least 5 characters"),
-  accountNumber: z.string().min(5, "Account number must be at least 5 digits"),
-  balance: z
-    .string()
-    .refine((value) => !isNaN(parseFloat(value)), {
-      message: "Balance must be a number",
-    })
-    .refine((value) => parseFloat(value) > 0, {
-      message: "Balance must be greater than 0",
-    }),
+import { Icon, CloseIcon } from '@/components/ui/icon';
+import { VStack } from '@/components/ui/vstack';
+import { HStack } from '@/components/ui/hstack';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Input, InputField } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { Modal, ModalBackdrop, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from '@/components/ui/modal';
+import { Box } from '@/components/ui/box';
+
+import SelectBank from '@/components/custom/select/select-bank';
+import SelectCurrency from '@/components/custom/select/select-currency';
+
+import { useBankAccounts } from '@/context/bank-accounts-context';
+import { Bank, Currency } from '@/database/types';
+
+const schema = z.object({
+  name: z.string().min(2, 'Mínimo 2 caracteres'),
+  account_number: z.string().optional(),
+  initial_balance: z.string().refine((v) => !isNaN(parseFloat(v)), 'Debe ser un número'),
 });
 
-type BankAccountSchemaType = z.infer<typeof bankAccountSchema>;
+type FormData = z.infer<typeof schema>;
 
-interface BankAccountFormProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function BankAccountForm({
-  isOpen,
-  onClose,
-}: BankAccountFormProps) {
-  const [isSheetBankOpen, setIsSheetBankOpen] = useState<boolean>(false);
-  const [selectedBank, setSelectedBank] = useState<Bank>({
-    id: 0,
-    name: "Select a bank",
-    abbreviation: "",
-  });
-  const { bankAccounts, addBankAccount, deleteBankAccount } = useBankAccounts();
+const DEFAULT_BANK: Bank = { id: 0, name: 'Seleccionar banco', abbreviation: '' };
+const DEFAULT_CURRENCY: Currency = { code: 'PEN', name: 'Sol peruano', symbol: 'S/' };
 
-  const handleSelectBank = (bank: Bank) => {
-    setSelectedBank(bank);
-    console.log("Selected Bank:", selectedBank);
+export default function BankAccountForm({ isOpen, onClose }: Props) {
+  const { addBankAccount } = useBankAccounts();
+
+  const [showBankSheet, setShowBankSheet] = useState(false);
+  const [showCurrencySheet, setShowCurrencySheet] = useState(false);
+  const [selectedBank, setSelectedBank] = useState<Bank>(DEFAULT_BANK);
+  const [selectedCurrency, setSelectedCurrency] = useState<Currency>(DEFAULT_CURRENCY);
+
+  const { control, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { initial_balance: '0' },
+  });
+
+  const handleClose = () => {
+    reset();
+    setSelectedBank(DEFAULT_BANK);
+    setSelectedCurrency(DEFAULT_CURRENCY);
+    onClose();
   };
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<BankAccountSchemaType>({
-    resolver: zodResolver(bankAccountSchema),
-  });
-
-  const onSubmit: SubmitHandler<z.infer<typeof bankAccountSchema>> = (data) => {
+  const onSubmit = async (data: FormData) => {
+    if (selectedBank.id === 0) return toast.error('Selecciona un banco');
     try {
-      addBankAccount({
-        name: data.name,
+      await addBankAccount({
         bank_id: selectedBank.id,
-        account_number: data.accountNumber,
-        balance: parseFloat(data.balance),
+        name: data.name,
+        account_number: data.account_number ?? '',
+        currency: selectedCurrency.code,
+        initial_balance: parseFloat(data.initial_balance),
       });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      reset();
-      setSelectedBank({ id: 0, name: "Select a bank", abbreviation: "" });
+      toast.success('Cuenta agregada');
+      handleClose();
+    } catch (e) {
+      toast.error('Error al guardar la cuenta');
     }
   };
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="lg">
-        {/* {showModal && (
-      <BlurView
-        style={styles.blurContainer}
-        intensity={5}
-        blurReductionFactor={3}
-        experimentalBlurMethod="dimezisBlurView"
-        tint="dark"
-      />
-    )} */}
+      <Modal isOpen={isOpen} onClose={handleClose} size="md">
         <ModalBackdrop />
-        <ModalContent className="border-0 rounded-xl">
+        <ModalContent className="border-0 rounded-2xl">
           <ModalHeader>
-            <Heading size="md" className="text-typography-950">
-              Manage your bank accounts
-            </Heading>
+            <HStack space="xs" className="items-center flex-1">
+              <Landmark size={18} color="#4B5563" />
+              <Heading size="md">Nueva cuenta</Heading>
+            </HStack>
             <ModalCloseButton>
-              <Icon
-                as={CloseIcon}
-                size="md"
-                className="stroke-background-400 group-[:hover]/modal-close-button:stroke-background-700 group-[:active]/modal-close-button:stroke-background-900 group-[:focus-visible]/modal-close-button:stroke-background-900"
-              />
+              <Icon as={CloseIcon} size="md" className="stroke-background-400" />
             </ModalCloseButton>
           </ModalHeader>
+
           <ModalBody>
-            <Box className="mb-4">
-              <Heading size="sm" className="mb-2">
-                🏦 Add a new bank account
-              </Heading>
-              <VStack space="md">
-                <Button
-                  action="primary"
-                  onPress={() => setIsSheetBankOpen(true)}
-                >
-                  <ButtonText>{selectedBank.name}</ButtonText>
-                </Button>
-                {selectedBank.id == 0 && (
-                  <Text size="sm" className="text-red-400">
-                    Please select a bank
-                  </Text>
+            <VStack space="sm">
+              {/* Bank selector */}
+              <Button variant="outline" onPress={() => setShowBankSheet(true)}>
+                <ButtonText>
+                  {selectedBank.id !== 0
+                    ? `${selectedBank.name} (${selectedBank.abbreviation})`
+                    : 'Seleccionar banco'}
+                </ButtonText>
+              </Button>
+
+              {/* Currency + initial balance side by side */}
+              <HStack space="sm">
+                <Box className="flex-1">
+                  <Button variant="outline" onPress={() => setShowCurrencySheet(true)}>
+                    <ButtonText>{selectedCurrency.symbol} {selectedCurrency.code}</ButtonText>
+                  </Button>
+                </Box>
+                <Box className="flex-1">
+                  <Controller
+                    control={control}
+                    name="initial_balance"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <Input variant="outline" size="md">
+                        <InputField
+                          placeholder="Saldo inicial"
+                          keyboardType="decimal-pad"
+                          onBlur={onBlur}
+                          onChangeText={onChange}
+                          value={String(value ?? '')}
+                        />
+                      </Input>
+                    )}
+                  />
+                </Box>
+              </HStack>
+              {errors.initial_balance && (
+                <Text size="xs" className="text-error-600">{errors.initial_balance.message}</Text>
+              )}
+
+              {/* Account name */}
+              <Controller
+                control={control}
+                name="name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input variant="outline" size="md">
+                    <InputField
+                      placeholder="Nombre de la cuenta"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </Input>
                 )}
-                <Controller
-                  control={control}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Input variant="outline" size="md">
-                      <InputField
-                        placeholder="Name"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={(value) => onChange(value)}
-                      />
-                    </Input>
-                  )}
-                  name="name"
-                />
-                {errors.name && (
-                  <Text size="sm" className="text-red-400">
-                    {errors.name.message}
-                  </Text>
+              />
+              {errors.name && (
+                <Text size="xs" className="text-error-600">{errors.name.message}</Text>
+              )}
+
+              {/* Account number (optional) */}
+              <Controller
+                control={control}
+                name="account_number"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Input variant="outline" size="md">
+                    <InputField
+                      placeholder="Número de cuenta (opcional)"
+                      keyboardType="numeric"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </Input>
                 )}
-                <Controller
-                  control={control}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Input variant="outline" size="md">
-                      <InputField
-                        placeholder="Account Number"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={(value) => onChange(value)}
-                      />
-                    </Input>
-                  )}
-                  name="accountNumber"
-                />
-                {errors.accountNumber && (
-                  <Text size="sm" className="text-red-400">
-                    {errors.accountNumber.message}
-                  </Text>
-                )}
-                <Controller
-                  control={control}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Input variant="outline" size="md">
-                      <InputField
-                        placeholder="Balance"
-                        keyboardType="numeric"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={(value) => onChange(value)}
-                      />
-                    </Input>
-                  )}
-                  name="balance"
-                />
-                {errors.balance && (
-                  <Text size="sm" className="text-red-400">
-                    {errors.balance.message}
-                  </Text>
-                )}
-                <Button onPress={handleSubmit(onSubmit)}>
-                  <ButtonText>Save 💸</ButtonText>
-                </Button>
-              </VStack>
-            </Box>
-            <Divider className="my-0.5" />
-            <Box>
-              <Heading size="sm">List of bank accounts</Heading>
-              <VStack space="md" className="mt-2">
-                {bankAccounts.length > 0 ? (
-                  bankAccounts.map((bankAccount: BankAccount) => (
-                    <Card
-                      key={bankAccount.id}
-                      size="md"
-                      variant="elevated"
-                      className="p-4"
-                    >
-                      <Box className="flex flex-row items-center justify-between">
-                        <Box className="flex flex-row items-center">
-                          <Image
-                            size="xs"
-                            source={require("@/assets/images/bank.png")}
-                            alt="money bag"
-                            className="mr-3"
-                          />
-                          <Box>
-                            <Text size="lg" className="mb-1 font-semibold">
-                              {bankAccount.name}
-                            </Text>
-                            <Text size="sm" className="text-typography-950">
-                              S/. {bankAccount.balance}
-                            </Text>
-                          </Box>
-                        </Box>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="ml-4"
-                          onPress={() => deleteBankAccount(bankAccount.id)}
-                        >
-                          <ButtonText>Delete</ButtonText>
-                        </Button>
-                      </Box>
-                    </Card>
-                  ))
-                ) : (
-                  <Alert action="info" variant="solid">
-                    <AlertIcon as={PiggyBank} />
-                    <AlertText>No bank accounts found</AlertText>
-                  </Alert>
-                )}
-              </VStack>
-            </Box>
+              />
+            </VStack>
           </ModalBody>
+
+          <ModalFooter>
+            <Button variant="outline" action="secondary" onPress={handleClose}>
+              <ButtonText>Cancelar</ButtonText>
+            </Button>
+            <Button onPress={handleSubmit(onSubmit)} isDisabled={isSubmitting}>
+              <ButtonText>{isSubmitting ? 'Guardando...' : 'Agregar cuenta'}</ButtonText>
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <SelectBank
-        isOpen={isSheetBankOpen}
-        onClose={() => setIsSheetBankOpen(false)}
-        onSelectBank={handleSelectBank}
-      />
+      <SelectBank isOpen={showBankSheet} onClose={() => setShowBankSheet(false)} onSelect={setSelectedBank} />
+      <SelectCurrency isOpen={showCurrencySheet} onClose={() => setShowCurrencySheet(false)} onSelect={setSelectedCurrency} />
     </>
   );
 }

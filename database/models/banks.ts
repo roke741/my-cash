@@ -1,15 +1,15 @@
 import * as SQLite from 'expo-sqlite';
-import { BankType } from '../types';
+import { Bank } from '../types';
 import { DATABASE_NAME } from '../config-db';
 
 const db = SQLite.openDatabaseSync(DATABASE_NAME);
 
 export const banksDB = {
-  async all(): Promise<BankType[]> {
-    return db.getAllAsync<BankType>('SELECT * FROM banks');
+  async all(): Promise<Bank[]> {
+    return db.getAllAsync<Bank>('SELECT * FROM banks');
   },
-  async find(id: number): Promise<BankType | undefined> {
-    const result = await db.getFirstAsync<BankType>('SELECT * FROM banks WHERE id = ?', [id]);
+  async find(id: number): Promise<Bank | undefined> {
+    const result = await db.getFirstAsync<Bank>('SELECT * FROM banks WHERE id = ?', [id]);
     return result || undefined;
   },
   async create(name: string, abbreviation: string): Promise<void> {

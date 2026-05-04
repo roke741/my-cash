@@ -30,15 +30,15 @@ export default function Balances() {
         <Box className="flex flex-row gap-3">
           <BalanceCard
             amount={0.00}
-            title="Total income"
+            title="Total ingresos"
             icon={require("@/assets/images/chart_increasing.png")}
-            color="text-green-400"
+            color="text-success-400"
           />
           <BalanceCard
             amount={0.00}
-            title="Total expenses"
+            title="Total gastos"
             icon={require("@/assets/images/chart_decreasing.png")}
-            color="text-red-400"
+            color="text-error-400"
           />
         </Box>
       </Box>

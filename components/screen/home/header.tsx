@@ -1,57 +1,40 @@
-import { Badge, BadgeIcon, BadgeText } from "@/components/ui/badge";
-import { Box } from "@/components/ui/box";
-import { Text } from "@/components/ui/text";
-import { Heading } from "@/components/ui/heading";
-import { useSQLiteContext } from "expo-sqlite";
-import { useState, useEffect } from "react";
-import { DatabaseZapIcon, RocketIcon } from "lucide-react-native";
-import { Image } from "@/components/ui/image";
-//import { Image } from "react-native";
+import { Image, Pressable } from 'react-native';
+import { router } from 'expo-router';
+import { Box } from '@/components/ui/box';
+import { Text } from '@/components/ui/text';
+import { Heading } from '@/components/ui/heading';
+import { useUser } from '@/context/user-context';
+
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Buenos días';
+  if (h < 19) return 'Buenas tardes';
+  return 'Buenas noches';
+}
 
 export default function Header() {
-  const db = useSQLiteContext();
-  const [version, setVersion] = useState<string | null>(null);
-  useEffect(() => {
-    async function fetchVersion() {
-      try {
-        const result = await db.getFirstAsync<{ "sqlite_version()": string }>(
-          "SELECT sqlite_version()"
-        );
-        if (result) {
-          setVersion(result["sqlite_version()"]);
-        } else {
-          setVersion("Unknown");
-        }
-      } catch (error) {
-        console.error("Error fetching SQLite version:", error);
-        setVersion("Unknown");
-      }
-    }
-    fetchVersion();
-  }, []);
+  const { userName } = useUser();
+  const name = userName.trim() || 'tú';
+
   return (
-    <Box className="flex flex-row justify-between py-4 mb-2">
-      <Box>
-        <Text size="lg">Hi Jhordie 👋</Text>
-        <Heading size="2xl">Welcome back!</Heading>
-        <Box className="flex flex-row gap-2">
-          <Badge size="sm" variant="solid" action="success">
-            <BadgeText>1.0.0</BadgeText>
-            <BadgeIcon as={RocketIcon} className="ml-2" />
-          </Badge>
-          <Badge size="sm" variant="solid" action="info">
-            <BadgeText>{version}</BadgeText>
-            <BadgeIcon as={DatabaseZapIcon} className="ml-2" />
-          </Badge>
-        </Box>
+    <Box className="flex-row justify-between items-center pt-2 pb-4">
+      <Box style={{ flex: 1, marginRight: 12 }}>
+        <Text size="sm" className="text-typography-500 mb-0.5">{greeting()},</Text>
+        <Heading size="2xl" className="text-typography-900 font-bold" numberOfLines={1}>
+          {name} 👋
+        </Heading>
       </Box>
-      <Box className="gap-2 -rotate-12" style={{ marginRight: 20 }}>
+      <Pressable
+        onPress={() => router.push('/(home)/settings')}
+        hitSlop={8}
+        style={{ transform: [{ rotate: '-12deg' }] }}
+      >
         <Image
-          size="md"
-          source={require("@/assets/images/money_bag.png")}
-          alt="Avatar"
+          source={require('@/assets/images/money_bag.png')}
+          style={{ width: 52, height: 52 }}
+          resizeMode="contain"
         />
-      </Box>
+      </Pressable>
     </Box>
   );
 }

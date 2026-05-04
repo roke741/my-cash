@@ -1,63 +1,45 @@
-import { Actionsheet, ActionsheetBackdrop, ActionsheetContent, ActionsheetDragIndicatorWrapper, ActionsheetDragIndicator, ActionsheetItem, ActionsheetItemText } from "@/components/ui/actionsheet";
-import { useSQLiteContext } from "expo-sqlite";
-import { useState, useEffect } from "react";
-import { BankAccount } from "@/database/types";  
+import {
+  Actionsheet,
+  ActionsheetBackdrop,
+  ActionsheetContent,
+  ActionsheetDragIndicatorWrapper,
+  ActionsheetDragIndicator,
+  ActionsheetItem,
+  ActionsheetItemText,
+} from '@/components/ui/actionsheet';
+import { useBankAccounts } from '@/context/bank-accounts-context';
+import { BankAccount } from '@/database/types';
 
-interface BankAccountsSelectProps {
+interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSelectBankAccount: (bank: BankAccount) => void;
+  onSelect: (account: BankAccount) => void;
 }
 
-export default function SelectBankAccounts({
-  isOpen,
-  onClose,
-  onSelectBankAccount
-}: BankAccountsSelectProps) {
-  const db = useSQLiteContext();
-
-  const [banks, setBanks] = useState<BankAccount[]>([]);
-
-  const handleClose = () => {
-    onClose();
-  };
-
-  useEffect(() => {
-    async function fetchBanks() {
-      const banks = await db.getAllAsync<BankAccount>('SELECT * FROM bank_accounts'); // bank_accounts
-      setBanks(banks);
-    };
-    fetchBanks();
-
-  }, []);
-
+export default function SelectBankAccounts({ isOpen, onClose, onSelect }: Props) {
+  const { bankAccounts } = useBankAccounts();
 
   return (
-    <Actionsheet 
-    isOpen={isOpen}
-    onClose={handleClose}>
-        <ActionsheetBackdrop />
-        <ActionsheetContent>
-          <ActionsheetDragIndicatorWrapper>
-            <ActionsheetDragIndicator />
-          </ActionsheetDragIndicatorWrapper>
-          {!banks.length ? (
-            <ActionsheetItem>
-              <ActionsheetItemText>No bank accounts found</ActionsheetItemText>
+    <Actionsheet isOpen={isOpen} onClose={onClose}>
+      <ActionsheetBackdrop />
+      <ActionsheetContent>
+        <ActionsheetDragIndicatorWrapper>
+          <ActionsheetDragIndicator />
+        </ActionsheetDragIndicatorWrapper>
+        {bankAccounts.length === 0 ? (
+          <ActionsheetItem>
+            <ActionsheetItemText>No hay cuentas. Agrégala en Ajustes.</ActionsheetItemText>
+          </ActionsheetItem>
+        ) : (
+          bankAccounts.map((account) => (
+            <ActionsheetItem key={account.id} onPress={() => { onSelect(account); onClose(); }}>
+              <ActionsheetItemText>
+                {account.name} · {account.currency} {(account.balance ?? 0).toFixed(2)}
+              </ActionsheetItemText>
             </ActionsheetItem>
-          ) : (
-            banks.map((bankAccount) => (
-              <ActionsheetItem 
-                key={bankAccount.id} 
-                onPress={() => {
-                  onSelectBankAccount(bankAccount);
-                  handleClose();
-                }}>
-                <ActionsheetItemText>🏦 {bankAccount.name}</ActionsheetItemText>
-              </ActionsheetItem>
-            ))
-          )}
-        </ActionsheetContent>
-      </Actionsheet>
+          ))
+        )}
+      </ActionsheetContent>
+    </Actionsheet>
   );
 }

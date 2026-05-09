@@ -25,11 +25,16 @@ SplashScreen.preventAutoHideAsync();
 
 function ThemedApp() {
   const { resolvedTheme } = useTheme();
+  const appBackground = resolvedTheme === 'dark' ? '#1C141E' : '#F2F2F7';
 
   return (
     <GluestackUIProvider mode={resolvedTheme}>
-      <StatusBar style={resolvedTheme === 'dark' ? 'light' : 'dark'} />
-      <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar
+        style={resolvedTheme === 'dark' ? 'light' : 'dark'}
+        translucent={false}
+        backgroundColor={appBackground}
+      />
+      <SafeAreaView style={{ flex: 1, backgroundColor: appBackground }} edges={['top']}>
         <View className="flex-1 bg-background-50">
           <Slot />
         </View>

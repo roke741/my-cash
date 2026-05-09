@@ -210,6 +210,7 @@ function SubscriptionForm({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     name="name"
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
+                        className="text-typography-900"
                         placeholder="Ej. Netflix, Sueldo..."
                         placeholderTextColor="#C7C7CC"
                         textAlign="right"
@@ -274,6 +275,7 @@ function SubscriptionForm({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                       name="amount"
                       render={({ field: { onChange, onBlur, value } }) => (
                         <TextInput
+                          className="text-typography-900"
                           placeholder="0.00"
                           placeholderTextColor="#C7C7CC"
                           keyboardType="decimal-pad"
@@ -376,6 +378,7 @@ function SubscriptionForm({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     name="description"
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
+                        className="text-typography-900"
                         placeholder="Opcional"
                         placeholderTextColor="#C7C7CC"
                         textAlign="right"
@@ -592,7 +595,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, paddingVertical: 14,
   },
   rowInvalid: { backgroundColor: 'rgba(255,59,48,0.06)' },
-  textInput: { fontSize: 14, color: '#1C1C1E', minWidth: 80, maxWidth: 160 },
+  textInput: { fontSize: 14, minWidth: 80, maxWidth: 160 },
   textInputError: { color: '#dc2626' },
   badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
 });

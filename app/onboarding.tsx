@@ -43,7 +43,7 @@ function StepName({ onNext }: { onNext: (name: string) => void }) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
         contentContainerStyle={styles.stepContainer}
@@ -68,6 +68,7 @@ function StepName({ onNext }: { onNext: (name: string) => void }) {
           <Text size="sm" className="text-typography-700 font-medium">¿Cómo te llamas?</Text>
           <TextInput
             ref={inputRef}
+            className="bg-background-0 text-typography-900"
             placeholder="Tu nombre..."
             placeholderTextColor="#C7C7CC"
             value={name}
@@ -165,7 +166,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={styles.root}>
+    <View style={styles.root} className="bg-background-50">
       <View style={styles.stepsContainer}>
         <Steps current={step} total={2} />
       </View>
@@ -179,10 +180,9 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   stepsContainer: {
-    paddingTop: 60,
+    paddingTop: 16,
     paddingBottom: 8,
     alignItems: 'center',
   },
@@ -221,13 +221,11 @@ const styles = StyleSheet.create({
   nameInput: {
     width: '100%',
     fontSize: 16,
-    color: '#1C1C1E',
     borderWidth: 1.5,
     borderColor: 'rgba(139,92,246,0.3)',
     borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    backgroundColor: 'white',
   },
   btn: {
     width: '100%',

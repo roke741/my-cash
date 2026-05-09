@@ -78,7 +78,8 @@ function BalanceSection({ balancesByCurrency }: { balancesByCurrency: { currency
             </HStack>
             <Text
               size="lg"
-              style={{ fontWeight: '700', color: positive ? '#28282E' : '#FF3B30' }}
+              className={positive ? 'text-typography-900' : 'text-error-400'}
+              style={{ fontWeight: '700' }}
             >
               {total.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
             </Text>

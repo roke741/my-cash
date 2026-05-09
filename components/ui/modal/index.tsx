@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { createModal } from '@gluestack-ui/core/modal/creator';
-import { Pressable, View, ScrollView } from 'react-native';
+import { Pressable, View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import {
   Motion,
   AnimatePresence,
@@ -19,7 +19,7 @@ const AnimatedPressable = createMotionAnimatedComponent(Pressable);
 const SCOPE = 'MODAL';
 
 const UIModal = createModal({
-  Root: withStyleContext(View, SCOPE),
+  Root: withStyleContext(KeyboardAvoidingView, SCOPE),
   Backdrop: AnimatedPressable,
   Content: Motion.View,
   Body: ScrollView,
@@ -31,6 +31,7 @@ const UIModal = createModal({
 
 cssInterop(AnimatedPressable, { className: 'style' });
 cssInterop(Motion.View, { className: 'style' });
+cssInterop(KeyboardAvoidingView, { className: 'style' });
 
 const modalStyle = tva({
   base: 'group/modal w-full h-full justify-center items-center web:pointer-events-none',
@@ -100,10 +101,19 @@ type IModalCloseButtonProps = React.ComponentProps<typeof UIModal.CloseButton> &
   VariantProps<typeof modalCloseButtonStyle> & { className?: string };
 
 const Modal = React.forwardRef<React.ElementRef<typeof UIModal>, IModalProps>(
-  ({ className, size = 'md', ...props }, ref) => (
+  ({ className, size = 'md', behavior, keyboardVerticalOffset, ...props }, ref) => (
     <UIModal
       ref={ref}
       {...props}
+      behavior={
+        behavior ??
+        (Platform.OS === 'ios'
+          ? 'padding'
+          : Platform.OS === 'android'
+            ? 'height'
+            : undefined)
+      }
+      keyboardVerticalOffset={keyboardVerticalOffset ?? 0}
       pointerEvents="box-none"
       className={modalStyle({ size, class: className })}
       context={{ size }}
@@ -204,10 +214,12 @@ const ModalHeader = React.forwardRef<
 const ModalBody = React.forwardRef<
   React.ElementRef<typeof UIModal.Body>,
   IModalBodyProps
->(({ className, ...props }, ref) => {
+>(({ className, keyboardShouldPersistTaps, showsVerticalScrollIndicator, ...props }, ref) => {
   return (
     <UIModal.Body
       ref={ref}
+      keyboardShouldPersistTaps={keyboardShouldPersistTaps ?? 'handled'}
+      showsVerticalScrollIndicator={showsVerticalScrollIndicator ?? false}
       {...props}
       className={modalBodyStyle({
         class: className,

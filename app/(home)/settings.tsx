@@ -414,6 +414,7 @@ function CategoriesModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
         <ModalFooter>
           <HStack className="flex-1 items-center" style={{ gap: 8 }}>
             <TextInput
+              className="bg-background-0 text-typography-900"
               placeholder="Nueva categoría..."
               placeholderTextColor="#C7C7CC"
               value={newName}
@@ -421,7 +422,7 @@ function CategoriesModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
               onSubmitEditing={handleAdd}
               returnKeyType="done"
               style={{
-                flex: 1, fontSize: 14, color: '#1C1C1E',
+                flex: 1, fontSize: 14,
                 borderWidth: 1, borderColor: 'rgba(60,60,67,0.2)',
                 borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10,
               }}

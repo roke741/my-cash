@@ -194,6 +194,7 @@ export default function ExpenseForm({ isOpen, onClose }: Props) {
                     name="amount"
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
+                        className="text-typography-900"
                         placeholder="0.00"
                         placeholderTextColor="#C7C7CC"
                         keyboardType="decimal-pad"
@@ -223,6 +224,7 @@ export default function ExpenseForm({ isOpen, onClose }: Props) {
                   name="description"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
+                      className="text-typography-900"
                       placeholder="Opcional"
                       placeholderTextColor="#C7C7CC"
                       textAlign="right"
@@ -327,7 +329,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontSize: 14,
-    color: '#1C1C1E',
     minWidth: 80,
     maxWidth: 160,
   },
